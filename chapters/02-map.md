@@ -441,8 +441,17 @@ HStack(spacing: 8) {
 
 **実験2：**
 - やったこと：
-- 結果：
+このコードを追加
+```
+extension CLLocationCoordinate2D: Equatable {
+    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
+        return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+    }
+}
+```
+- 結果：エラーが消えた
 - わかったこと：
+  `SwiftUI` の `.onChange(of: value)` メソッドは、監視する対象のデータ型が「比較可能（Equatable）」であることを要求します。しかし、Appleの公式フレームワーク `CoreLocation` で定義されている `CLLocationCoordinate2D` 構造体は、標準では `Equatable` ではないため、値が変化したかどうかを `onChange` が判断できずコンパイルエラーになります。
 
 ## AIに聞いて特に理解が深まった質問 TOP3
 
