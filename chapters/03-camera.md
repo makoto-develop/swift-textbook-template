@@ -171,6 +171,7 @@ struct CameraView: UIViewControllerRepresentable {
 	2.	ライブラリ選択: 「ライブラリ」ボタンをタップすると、iPhoneの標準フォトライブラリが立ち上がり、保存されている画像の中から1枚選ぶことができます。
 	3.	カメラ撮影: 「カメラ」ボタンをタップすると、カメラ機能が起動します。写真を撮影して「写真を使用」を選択すると、その画像がアプリのメイン画面に反映されます。
 	4.	表示: 選択または撮影された画像は、画面に合わせてリサイズされ、角が丸くなった状態で綺麗に表示されます。
+	
 <img width="1179" height="2556" alt="image" src="https://github.com/user-attachments/assets/7fb734cc-773d-4418-b5e8-845df6bfde4a" />
 
 ## コードの詳細解説
@@ -188,10 +189,10 @@ PhotosPicker(selection: $selectedItem, matching: .images) {
 iOSの写真ライブラリを開いて、写真に選択ができる
 
 **なぜこう書くのか：**
-（別の書き方ではなく、この書き方が選ばれている理由を説明する）
+SwiftUIのフレームワークに提供しているから、こうしか書けない
 
 **もしこう書かなかったら：**
-（この部分を省略したり変えたりすると何が起きるか。実際に試した結果があればここに書く）
+こう書かなかったら、写真を選択できないかな
 
 ---
 
@@ -214,9 +215,16 @@ iOSの写真ライブラリを開いて、写真に選択ができる
 
 **何をしているか：**
 
-**なぜこう書くのか：**
+`PhotosPicker` で選択されたアイテム（PhotosPickerItem）から、実際の画像データを取り出し、画面に表示できる形式（Image）に変換しています。
 
+**なぜこう書くのか：**
+1.	「待機」が必要だから (await): 高画質な写真はデータ容量が大きく、読み込みに時間がかかります。`await` を使うことで、読み込みが終わるまでプログラムの実行をスマートに待機させることができます。
+2.	アプリを固まらせないため (async): この処理を「非同期（async）」にすることで、重い画像の読み込み中であっても、ユーザーが画面をスクロールしたり他の操作をしたりすることを妨げないようにしています。
+   
 **もしこう書かなかったら：**
+
+ - フリーズ（画面の固まり）: メインスレッド（画面描画を担当する場所）でこの重い処理を行うと、画像を表示するまでの数秒間、ボタンが反応しなくなったり画面が全く動かなくなったりします。
+ - アプリの強制終了: 読み込みに失敗した際の処理（catch）を書かないと、予期せぬデータが入ってきた時にアプリがクラッシュする原因になります。
 
 ---
 
@@ -239,50 +247,60 @@ struct CameraView: UIViewControllerRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: CameraView
-
-        init(_ parent: CameraView) {
-            self.parent = parent
-        }
-
-        func imagePickerController(
-            _ picker: UIImagePickerController,
-            didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
-        ) {
-            if let image = info[.originalImage] as? UIImage {
-                parent.capturedImage = image
-            }
-            parent.dismiss()
-        }
-
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.dismiss()
-        }
-    }
 }
 ```
 
 **何をしているか：**
 
+SwiftUIには「カメラ画面」という部品がまだ用意されていないため、**昔からあるUIKitのカメラ画面（`UIImagePickerController`）を、SwiftUIで使えるように「箱詰め」**しています。
+
 **なぜこう書くのか：**
 
+SwiftUIとUIKitは仕組みが違うからです。そのままでは会話できないため、この UIViewControllerRepresentable という**共通のプロトコル**に従って書くことで、SwiftUIの画面の一部としてカメラを表示できるようになります。
+
 **もしこう書かなかったら：**
+
+SwiftUIはカメラの標準UIを数行で呼び出す機能がないため、アプリにカメラ機能を組み込むことができません。
 
 ---
 
 ### Coordinatorパターン
 
 ```swift
-// 該当部分のコードを抜粋して貼る
+class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+	let parent: CameraView
+
+	init(_ parent: CameraView) {
+		self.parent = parent
+	}
+
+	func imagePickerController(
+		_ picker: UIImagePickerController,
+		didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+	) {
+		if let image = info[.originalImage] as? UIImage {
+			parent.capturedImage = image
+		}
+		parent.dismiss()
+	}
+
+	func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+		parent.dismiss()
+	}
+}
 ```
 
 **何をしているか：**
 
+カメラ側から届く「写真が撮れたよ！」という通知を受け取って、SwiftUI側に中継する「連絡係」です。
+
 **なぜこう書くのか：**
 
+SwiftUI（構造体）は、UIKitからの「撮影完了」という通知を直接受け取ることができないというルールがあるからです。通知を受け取れる専用の「クラス」としてこの `Coordinator` を用意します。
+
 **もしこう書かなかったら：**
+
+シャッターボタンを押しても「写真データがアプリに届かない」、かつ「撮影後にカメラ画面が閉じない」という、動かないボタンになってしまいます。
 
 ---
 
