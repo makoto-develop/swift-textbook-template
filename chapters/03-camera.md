@@ -310,10 +310,9 @@ SwiftUI（構造体）は、UIKitからの「撮影完了」という通知を�
 
 | 項目 | 説明 | 使用例 |
 |------|------|--------|
-| 例：`PhotosPicker` | フォトライブラリから画像を選択するコンポーネント | `PhotosPicker(selection: $selectedItem, matching: .images)` |
-| 例：`UIImagePickerController` | カメラまたはフォトライブラリにアクセスするUIKitコンポーネント | `picker.sourceType = .camera` |
-| | | |
-| | | |
+| `CIFilter` | 画像処理にとても便利なフィルタ一 | `CIFilter.sepiaTone() / CIFilter.photoEffectMono()` |
+| `loadTransferable` | ファイルや画像を読み込む処理を行うときに便利なの | `await item.loadTransferable(type: Data.self)` |
+| `createCGImage` | Core Image用の画像情報(CIImage)から表示用の画像(CGImage)を生成する | context.createCGImage(output, from: ciImage.extent) |
 | | | |
 
 ## 自分の実験メモ
@@ -321,9 +320,16 @@ SwiftUI（構造体）は、UIKitからの「撮影完了」という通知を�
 （模範コードを改変して試したことを書く）
 
 **実験1：**
-- やったこと：
-- 結果：
-- わかったこと：
+- やったこと：反転のフィルターを追加
+ 
+  ```
+	case .invert:
+	let filter = CIFilter.colorInvert()
+	filter.inputImage = inputImage
+	return filter.outputImage
+  ```
+- 結果：予想通り動作した
+- わかったこと：何も
 
 **実験2：**
 - やったこと：
