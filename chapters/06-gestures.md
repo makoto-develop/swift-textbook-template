@@ -481,7 +481,7 @@ SwiftUIではタップや長押しを簡単に扱うための専用Modifierが�
 # 応用編
 
 ## 模範コードの全体像
-`
+```
 // ============================================
 // 第6章（応用）：Tinder風スワイプカードUI
 // ============================================
@@ -706,7 +706,7 @@ struct SwipeCardView: View {
 #Preview {
     ContentView()
 }
-`
+```
 
 ### ジェスチャーの組み合わせとアニメーション
 
@@ -727,8 +727,8 @@ struct SwipeCardView: View {
 | `DragGesture` | ドラッグジェスチャーを認識するジェスチャーレコグナイザー | `.gesture(DragGesture().onChanged { ... })` |
 | `MagnifyGesture` | ピンチジェスチャーで拡大・縮小を認識 | `.gesture(MagnificationGesture().onChanged { scale in ... })` |
 | `onLongPressGesture` | ロングプレスの書き方 | .onLongPressGesture(minimumDuration: 0.5) {} |
-| `RotateGesture` |　回転のジェスチャー | RotateGesture().onChanged { value in} .onEnded { _ in} |
-| `simultaneousGesture` |　gestureの新しい書き方 | .simultaneousGesture() |
+| `RotateGesture` | 回転のジェスチャー | RotateGesture().onChanged { value in} .onEnded { _ in} |
+| `simultaneousGesture` | gestureの新しい書き方 | .simultaneousGesture() |
 | `shuffled` | 配列の要素をランダムな順番に並び替えた新しい配列を返す | [].shuffled() |
 
 ## 応用編
