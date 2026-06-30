@@ -336,20 +336,22 @@ GPSが新しい位置をキャッチするたびに自動で呼び出され、�
 
 | 項目 | 説明 | 使用例 |
 |------|------|--------|
-| 例：`CMMotionManager` | 加速度・ジャイロ・気圧などのセンサーデータを取得 | `motionManager.startDeviceMotionUpdates(to: .main) { ... }` |
-| 例：`CMPedometer` | 歩数や歩行距離をカウント | `pedometer.queryPedometerData(from: startDate, to: Date())` |
-| | | |
-| | | |
-| | | |
+| `CMMotionManager` | iPhoneの傾き、加速、回転などのセンサーをまとめて管理するクラス。 | `let motionManager = CMMotionManager()` |
+| `startDeviceMotionUpdates` | デバイスの傾きをリアルタイムに、`.main`へ届ける関数。 | `motionManager.startDeviceMotionUpdates(to: .main) { ... }` |
+| `CMDeviceMotion` | センサーから届くデータの塊。この中に傾き（attitude）などの情報が入っている。 | `motion.attitude.pitch` |
+| `Path` | 直線や曲線を自分で自由に描いてカスタムの図形を作るための機能。 |　`Path { path in path.move(to: ...); path.addLine(to: ...) }` |
 
 ## 自分の実験メモ
 
-（模範コードを改変して試したことを書く）
-
 **実験1：**
 - やったこと：
+水平判定の条件を abs(pitch) < 0.03 から abs(pitch) < 0.01 に狭めてみた。
+
 - 結果：
+バブルが緑色になって「水平！」と表示される判定が、前よりも厳しくなった。少しでも手が震えたり傾いたりすると、すぐに赤色に戻ってしまう。
+
 - わかったこと：
+何も
 
 **実験2：**
 - やったこと：
