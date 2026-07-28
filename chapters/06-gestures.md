@@ -736,15 +736,15 @@ struct SwipeCardView: View {
 
 ## 自分の実験メモ
 
-**実験1：**
-- やったこと：`DragGesture`の`.onEnded`で`value.velocity`を取得して、カードに慣性移動を追加した。
-- 結果：指を速く離すと、カードが少し先まで移動するようになった。
-- わかったこと：`velocity`を使うと物理的な動きを表現できる。
+**実験1：DragGesture の速度を利用**
+- やったこと：`value.velocity` を使って慣性移動を追加した。
+- 結果：指を速く離すと、カードが少し先まで移動しました。
+- わかったこと：ジェスチャーの値を使うと、より自然な動きを表現できる。
 
-**実験2：**
-- やったこと：`.gesture()`を`.simultaneousGesture()`に変更した。
-- 結果：`.gesture()`の場合、拡大縮小・回転を同時にうまく動作しないことがあった。
-- わかったこと：複数の継続ジェスチャーを同時に使いたい場合は、`simultaneousGesture`が適している。SwiftUIの`gesture`はジェスチャー同士が競合する場合がある。
+**実験2：gesture と simultaneousGesture の比較**
+- やったこと：`.gesture()`を`.simultaneousGesture()`を比較した。
+- 結果：`.gesture()`では拡大縮小と回転が同時に動かない場合があったが、`.simultaneousGesture()` では同時操作できた。
+- わかったこと：複数の継続ジェスチャーを組み合わせる場合は、ジェスチャー同士の競合を避ける必要がある。
 
 **実験3：**
 - やったこと：`DispatchQueue.main.asyncAfter(deadline: .now() + 1) {}`を`Task { try? await Task.sleep(for: .seconds(1))}` に変更した
